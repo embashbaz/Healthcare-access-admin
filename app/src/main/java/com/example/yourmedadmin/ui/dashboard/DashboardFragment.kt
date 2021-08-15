@@ -1,4 +1,4 @@
-package com.example.yourmedadmin.ui.registration
+package com.example.yourmedadmin.ui.dashboard
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.example.yourmedadmin.R
 
 
-class RegistrationFragment : Fragment() {
+class DashboardFragment : Fragment() {
 
 
     override fun onCreateView(
@@ -16,7 +16,7 @@ class RegistrationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_registration, container, false)
+        return inflater.inflate(R.layout.fragment_dashboard, container, false)
     }
 
 }

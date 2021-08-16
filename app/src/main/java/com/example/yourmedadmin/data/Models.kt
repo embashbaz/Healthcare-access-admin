@@ -1,5 +1,7 @@
 package com.example.yourmedadmin.data
 
+import com.google.firebase.firestore.GeoPoint
+
 
 data class CareAdmin(
   var uId: String? = "",
@@ -10,7 +12,7 @@ data class CareAdmin(
   var document: String = "",
   var country: String ="",
   var town: String = "",
-  var adress: String = "",
+  var coordinate: GeoPoint? = null,
   var serviceOffered: String = "",
   var details: String ="",
 

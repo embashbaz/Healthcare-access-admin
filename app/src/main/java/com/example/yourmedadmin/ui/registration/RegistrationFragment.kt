@@ -5,15 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
+import androidx.lifecycle.ViewModelProvider
 import com.example.yourmedadmin.R
+import com.example.yourmedadmin.data.CareAdmin
+import com.example.yourmedadmin.ui.login.LoginViewModel
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.firestore.GeoPoint
 
 
-class RegistrationFragment : Fragment() {
+class RegistrationFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     lateinit var nameTl: TextInputLayout
     lateinit var phoneTl: TextInputLayout
@@ -30,6 +31,23 @@ class RegistrationFragment : Fragment() {
     lateinit var registerProgress: ProgressBar
     lateinit var registerBt: Button
 
+    lateinit var name: String
+    lateinit var phone: String
+    lateinit var email: String
+    lateinit var password: String
+    lateinit var confirmPassword: String
+    lateinit var license: String
+    lateinit var town: String
+    lateinit var detail: String
+    lateinit var country: String
+    lateinit var serviceOffered: String
+    var coordinate: GeoPoint? = null
+    var uploadLicense = false
+
+    val registrationViewModel : RegistrationViewModel by lazy {
+        ViewModelProvider(this).get(RegistrationViewModel::class.java)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,11 +57,56 @@ class RegistrationFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_registration, container, false)
         bindViews(view)
         registerBt.setOnClickListener{
-
+            registerMethod()
         }
 
 
         return view
+    }
+
+    fun getViewData(){
+
+        name = nameTl.editText?.text.toString()
+        phone = phoneTl.editText?.text.toString()
+        email = emailTl.editText?.text.toString()
+        password = passwordTl.editText?.text.toString()
+        confirmPassword = confirmPasswordTl.editText?.text.toString()
+        license = licenseTl.editText?.text.toString()
+        town = townTl.editText?.text.toString()
+        detail = detailTl.editText?.text.toString()
+
+    }
+
+    fun checkMandatoryField(): Boolean{
+
+        if (coordinate == null){
+            Toast.makeText(activity, "Please add coordinate", Toast.LENGTH_LONG).show()
+          return false
+
+        }
+        else {
+            return !name.isNullOrEmpty() && !phone.isNullOrEmpty() && !email.isNullOrEmpty() &&
+                    !password.isNullOrEmpty() && !confirmPassword.isNullOrEmpty() && !license.isNullOrEmpty() &&
+                    !town.isNullOrEmpty() && !country.isNullOrEmpty() && !serviceOffered.isNullOrEmpty()
+        }
+
+    }
+
+    fun registerMethod(){
+        getViewData()
+        if (checkMandatoryField()){
+            if(password == confirmPassword){
+            val careAdmin = CareAdmin("",name, phone.toLong(), email,license, "",country, town, coordinate,serviceOffered,detail )
+            registrationViewModel.signUp(careAdmin, password)
+            registrationViewModel.registrationOutput.observe(viewLifecycleOwner,{
+                //show something
+            })
+         }else{
+
+            }
+        }else{
+
+        }
     }
 
     fun bindViews(view: View){
@@ -61,5 +124,43 @@ class RegistrationFragment : Fragment() {
         uploadLicenseTxt = view.findViewById(R.id.upload_license_txt)
         registerProgress = view.findViewById(R.id.progressBar_register)
         registerBt = view.findViewById(R.id.register_bt)
+
+        countrySp.onItemSelectedListener = this
+
+        ArrayAdapter.createFromResource(
+            requireActivity(),
+            R.array.countries_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            countrySp.adapter = adapter
+        }
+
+        serviceOfferedSp.onItemSelectedListener = this
+
+        ArrayAdapter.createFromResource(
+            requireActivity(),
+            R.array.type_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            serviceOfferedSp.adapter = adapter
+        }
+
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+       if (parent != null){
+           country = parent.getItemAtPosition(position).toString()
+           serviceOffered = parent.getItemAtPosition(position).toString()
+       }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        TODO("Not yet implemented")
     }
 }

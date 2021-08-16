@@ -19,4 +19,8 @@ class ServiceDetailFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_service_detail, container, false)
     }
 
+    fun bindViews(view: View){
+
+    }
+
 }

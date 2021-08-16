@@ -18,4 +18,8 @@ class ServiceListFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_service_list, container, false)
     }
 
+    fun bindViews(view: View){
+
+    }
+
 }

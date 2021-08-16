@@ -19,4 +19,10 @@ class ProductDetailFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_product_detail, container, false)
     }
 
+    fun bindViews(view: View){
+
+    }
+
+
+
 }

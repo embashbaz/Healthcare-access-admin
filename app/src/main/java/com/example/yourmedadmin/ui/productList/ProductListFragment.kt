@@ -19,4 +19,8 @@ class ProductListFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_product_list, container, false)
     }
 
+    fun bindViews(view: View){
+
+    }
+
 }

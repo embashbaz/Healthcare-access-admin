@@ -32,9 +32,9 @@ class ServiceDetailFragment : Fragment() {
 
     fun bindViews(view: View){
         nameTl = view.findViewById(R.id.name_service_tl)
-        identifierTl = view.findViewById(R.id.)
-        detailTl = view.findViewById(R.id.identifier_service_tl)
-        priceTl = view.findViewById(R.id.details_service_tl)
+        identifierTl = view.findViewById(R.id.identifier_service_tl)
+        detailTl = view.findViewById(R.id.details_service_tl)
+        priceTl = view.findViewById(R.id.price_service_tl)
         priceDescTl = view.findViewById(R.id.price_desc_service_tl)
         availabilitySp = view.findViewById(R.id.availability_service_detail_sp)
         saveBt = view.findViewById(R.id.save_service)

@@ -14,7 +14,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.GeoPoint
 
 
-class RegistrationFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class RegistrationFragment : Fragment(),CoordinateDialog.CoordinateDialogListener ,AdapterView.OnItemSelectedListener {
 
     lateinit var nameTl: TextInputLayout
     lateinit var phoneTl: TextInputLayout
@@ -60,8 +60,18 @@ class RegistrationFragment : Fragment(), AdapterView.OnItemSelectedListener {
             registerMethod()
         }
 
+        coordinateTxt.setOnClickListener{
+            getCoordinate()
+        }
 
         return view
+    }
+
+    fun getCoordinate(){
+
+        val dialog = CoordinateDialog()
+        dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Give Coordinate")
     }
 
     fun getViewData(){
@@ -162,5 +172,9 @@ class RegistrationFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")
+    }
+
+    override fun onDialogPositiveClick(geoPoint: GeoPoint) {
+        coordinate = geoPoint
     }
 }

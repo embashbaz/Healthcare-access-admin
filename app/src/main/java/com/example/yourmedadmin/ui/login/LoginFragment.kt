@@ -58,11 +58,13 @@ class LoginFragment : Fragment() {
             )
 
             loginViewModel.loginOutput.observe(viewLifecycleOwner, {
-                Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
-                    .show()
+               // Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
+                //    .show()
                 if (it["status"] == "success") {
                     (activity?.application as HealthAccessAdmin).uId = it["value"].toString()
                    // this.findNavController().navigate(R.id.action_loginFragment_to_landInFragment)
+                }else if (it["status"] == "failed"){
+                   //TODO: show dialog
                 }
             })
         }else{

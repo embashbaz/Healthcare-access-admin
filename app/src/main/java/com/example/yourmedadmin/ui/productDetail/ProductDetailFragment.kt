@@ -100,6 +100,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     private fun deleteButtonPressed(){
         val dialog = NoticeDialog(DELETE_CODE, "Are you sure you want to delete this product", "Yes")
         dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Delete Medicine")
 
     }
 

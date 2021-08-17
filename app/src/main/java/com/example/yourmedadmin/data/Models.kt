@@ -22,7 +22,7 @@ data class CareAdmin(
 
 @Parcelize
 data class Service(
-    var uId: String? = "",
+    var serviceId: String = "",
     var name: String? = "",
     var identifier : String? = "",
     var details: String ="",

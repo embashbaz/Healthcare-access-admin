@@ -185,7 +185,7 @@ class Repository {
                 for (snapshot in it){
 
                     val docObject = snapshot.toObject(Service::class.java)
-                    docObject.uId = snapshot.id
+                    docObject.serviceId = snapshot.id
 
                     dataList.add(docObject)
                 }

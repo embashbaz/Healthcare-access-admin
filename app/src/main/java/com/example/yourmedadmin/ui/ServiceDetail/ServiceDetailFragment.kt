@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.HealthAccessAdmin
@@ -13,11 +14,13 @@ import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Medicine
 import com.example.yourmedadmin.data.Service
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
+import com.example.yourmedadmin.ui.dialogs.NoticeDialog
 import com.google.android.material.textfield.TextInputLayout
 
 
-class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, NoticeDialog.NoticeDialogListener {
 
+    private val DELETE_CODE = 2
     lateinit var nameTl: TextInputLayout
     lateinit var identifierTl: TextInputLayout
     lateinit var detailTl: TextInputLayout
@@ -25,6 +28,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
     lateinit var priceDescTl: TextInputLayout
     lateinit var availabilitySp: Spinner
     lateinit var saveBt : Button
+    lateinit var ignoreBt: Button
 
     lateinit var name: String
     lateinit var identifier: String
@@ -67,11 +71,25 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
             saveBt.setOnClickListener{
                 saveService()
             }
+
+            ignoreBt.setOnClickListener{
+               clearFields()
+            }
         }else{
             saveBt.setOnClickListener{
                 updateService()
             }
+
+            ignoreBt.setOnClickListener{
+                deleteButtonPressed()
+            }
         }
+    }
+
+    private fun deleteButtonPressed() {
+        val dialog = NoticeDialog(DELETE_CODE, "Are you sure you want to delete this product", "Yes")
+        dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Delete Service")
     }
 
     private fun updateService() {
@@ -83,7 +101,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
             passedService!!.price = priceStr.toDouble()
             passedService!!.priceDescription = priceDesc
             passedService!!.availability = availability
-            serviceDetailViewmodel.updateService(uId, passedService!!.uId!!, passedService!!)
+            serviceDetailViewmodel.updateService(uId, passedService!!.serviceId, passedService!!)
             serviceDetailViewmodel.updatingServiceOutput.observe(viewLifecycleOwner,{
                 if (it["status"] == "success"){
                     Toast.makeText(activity, "Record updated ", Toast.LENGTH_LONG).show()
@@ -101,6 +119,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun setDataToViews() {
         saveBt.setText("Update")
+        ignoreBt.setText("Delete service")
         nameTl.editText?.setText(passedService!!.name)
         priceDescTl.editText?.setText(passedService!!.priceDescription)
         identifierTl.editText?.setText(passedService!!.identifier)
@@ -116,6 +135,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         priceDescTl = view.findViewById(R.id.price_desc_service_tl)
         availabilitySp = view.findViewById(R.id.availability_service_detail_sp)
         saveBt = view.findViewById(R.id.save_service)
+        ignoreBt = view.findViewById(R.id.ignore_bt)
 
         availabilitySp.onItemSelectedListener = this
 
@@ -183,6 +203,24 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment, code: Int) {
+        if (code == DELETE_CODE)
+            deleteService()
+    }
+
+    private fun deleteService() {
+        serviceDetailViewmodel.deleteService(uId, passedService!!.serviceId!!)
+        serviceDetailViewmodel.deletingServiceOutput.observe(viewLifecycleOwner, {
+            if (it["status"] == "success"){
+                Toast.makeText(activity, "Record deleted", Toast.LENGTH_LONG).show()
+                this.findNavController().navigateUp()
+
+            }else if (it["status"] == "failed"){
+                openInfodialog(it["value"]!!, "Error deleting the item")
+            }
+        })
     }
 
 }

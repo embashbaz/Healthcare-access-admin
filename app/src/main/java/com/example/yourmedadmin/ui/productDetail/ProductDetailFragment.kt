@@ -109,7 +109,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
             productDetailViewModel.addingProductOutput.observe(viewLifecycleOwner, {
                 if (it["status"] == "success"){
                     Toast.makeText(activity, "Record added ", Toast.LENGTH_LONG).show()
-                    clearFiewlds()
+                    clearFields()
 
                 }else if (it["status"] == "failed"){
                     //TODO: notice dialog
@@ -118,7 +118,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    fun clearFiewlds(){
+    fun clearFields(){
         genericNameTl.editText?.setText("")
         scientificNameTl.editText?.setText("")
         detailTl.editText?.setText("")

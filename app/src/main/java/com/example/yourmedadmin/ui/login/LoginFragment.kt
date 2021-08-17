@@ -38,6 +38,10 @@ class LoginFragment : Fragment() {
             loginMethod()
         }
 
+        registerBt.setOnClickListener{
+            this.findNavController().navigate(R.id.action_loginFragment_to_registrationFragment)
+        }
+
         return view
     }
 
@@ -62,7 +66,7 @@ class LoginFragment : Fragment() {
                 //    .show()
                 if (it["status"] == "success") {
                     (activity?.application as HealthAccessAdmin).uId = it["value"].toString()
-                   // this.findNavController().navigate(R.id.action_loginFragment_to_landInFragment)
+                  this.findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
                 }else if (it["status"] == "failed"){
                    //TODO: show dialog
                 }

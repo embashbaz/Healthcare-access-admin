@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.yourmedadmin.HealthAccessAdmin
@@ -42,11 +43,18 @@ class ProductListFragment : Fragment() {
         listAdapter = ProductsListAdapter { medicine -> goToMedicineDetail(medicine) }
         populateView()
 
+        addProductFb.setOnClickListener{
+            this.findNavController().navigate(R.id.action_serviceListFragment_to_serviceDetailFragment)
+        }
+
 
         return view
     }
 
     private fun goToMedicineDetail(medicine: Medicine) {
+        val bundle = Bundle()
+        bundle.putParcelable("medicine", medicine)
+        this.findNavController().navigate(R.id.action_serviceListFragment_to_serviceDetailFragment, bundle)
 
     }
 

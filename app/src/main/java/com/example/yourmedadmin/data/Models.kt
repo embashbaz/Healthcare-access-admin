@@ -1,6 +1,8 @@
 package com.example.yourmedadmin.data
 
+import android.os.Parcelable
 import com.google.firebase.firestore.GeoPoint
+import kotlinx.android.parcel.Parcelize
 
 
 data class CareAdmin(
@@ -18,6 +20,7 @@ data class CareAdmin(
 
 )
 
+@Parcelize
 data class Service(
     var uId: String? = "",
     var name: String? = "",
@@ -26,8 +29,9 @@ data class Service(
     var price: Double =0.0,
     var priceDescription: String = "",
     var availability: String = ""
-)
+): Parcelable
 
+@Parcelize
 data class Medicine(
    var scientificName: String? = "",
    var genericName: String = "",
@@ -36,6 +40,5 @@ data class Medicine(
    var availability: String = "",
    var medUid: String = "",
    var price: Double = 0.0
-
-)
+): Parcelable
 

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Medicine
@@ -32,6 +33,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
     lateinit var availability: String
 
     lateinit var uId: String
+    var passedProduct: Medicine? = null
 
     val productDetailViewModel: ProductDetailViewModel by lazy {
         ViewModelProvider(this).get(ProductDetailViewModel::class.java)
@@ -44,13 +46,66 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_product_detail, container, false)
         bindViews(view)
-        uId = (activity?.application as HealthAccessAdmin).uId
-        saveBt.setOnClickListener{
-            saveProduct()
+        if(arguments?.getParcelable<Medicine>("medicine") != null) {
+            passedProduct = arguments?.getParcelable("medicine")
+            setDataToViews()
         }
+
+        setButtonAction()
+
+
+        uId = (activity?.application as HealthAccessAdmin).uId
+
+
 
 
         return view
+    }
+
+    private fun setDataToViews() {
+        saveBt.setText("Update")
+        genericNameTl.editText?.setText(passedProduct!!.genericName)
+        scientificNameTl.editText?.setText(passedProduct!!.scientificName)
+        detailTl.editText?.setText(passedProduct!!.detailsMed)
+        priceTl.editText?.setText(passedProduct!!.price.toString())
+
+    }
+
+    fun setButtonAction(){
+        if(passedProduct == null)
+        {
+            saveBt.setOnClickListener{
+                saveProduct()
+            }
+        }else{
+            updateMedicine()
+        }
+
+    }
+
+    private fun updateMedicine() {
+        getDataFromView()
+        if(checkMandatoryFields()){
+            passedProduct!!.scientificName = scientificName
+            passedProduct!!.genericName = genericName
+            passedProduct!!.countryMade = countryManufacturing
+            passedProduct!!.detailsMed = detail
+            passedProduct!!.availability = availability
+            passedProduct!!.price = priceStr.toDouble()
+            productDetailViewModel.updateProduct(uId, passedProduct!!.medUid, passedProduct!!)
+            productDetailViewModel.addingProductOutput.observe(viewLifecycleOwner, {
+                if (it["status"] == "success"){
+                    Toast.makeText(activity, "Record updated ", Toast.LENGTH_LONG).show()
+                    this.findNavController().navigateUp()
+
+                }else if (it["status"] == "failed"){
+                    openInfodialog(it["value"]!!, "Error updating item")
+                }
+            })
+        }else{
+            openInfodialog("Only manufacturing country, scientific name and details can be null", "Failed to add record")
+
+        }
     }
 
     fun bindViews(view: View){

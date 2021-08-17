@@ -7,7 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Service
-import com.example.yourmedadmin.ui.productList.ProductsListAdapter
+
+
 
 class ServiceListAdapter  (onClick: (Service) -> Unit): RecyclerView.Adapter<ServiceListAdapter.ViewHolder>() {
 

@@ -11,6 +11,7 @@ class NoticeDialog (code: Int,message: String, positiveText: String) : DialogFra
     internal lateinit var listener: NoticeDialogListener
     val mMessage = message
     val positiveText = positiveText
+    val CODE = code
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
@@ -21,10 +22,8 @@ class NoticeDialog (code: Int,message: String, positiveText: String) : DialogFra
                 .setPositiveButton(positiveText,
                     DialogInterface.OnClickListener { dialog, id ->
                         // Send the positive button event back to the host activity
-                        if (listener!= null)
-                            listener.onDialogPositiveClick(this)
-                        else
-                            dialog.dismiss()
+                              listener.onDialogPositiveClick(this, CODE)
+
                     })
                 .setNegativeButton("Cancel",
                     DialogInterface.OnClickListener { dialog, id ->
@@ -41,8 +40,7 @@ class NoticeDialog (code: Int,message: String, positiveText: String) : DialogFra
     }
 
     interface NoticeDialogListener {
-        fun onDialogPositiveClick(dialog: DialogFragment){ }
-        fun onDialogNegativeClick(dialog: DialogFragment)
+        fun onDialogPositiveClick(dialog: DialogFragment, code: Int)
     }
 
 }

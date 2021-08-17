@@ -6,16 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Medicine
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
+import com.example.yourmedadmin.ui.dialogs.NoticeDialog
 import com.google.android.material.textfield.TextInputLayout
 
 
-class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , NoticeDialog.NoticeDialogListener{
+
+    val DELETE_CODE = 3
 
     lateinit var genericNameTl: TextInputLayout
     lateinit var scientificNameTl: TextInputLayout
@@ -24,6 +28,8 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
     lateinit var countryManufacturingSp: Spinner
     lateinit var availabilitySp: Spinner
     lateinit var saveBt: Button
+    lateinit var ignoreBt: Button
+
 
     lateinit var genericName: String
     lateinit var scientificName: String
@@ -77,9 +83,40 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
             saveBt.setOnClickListener{
                 saveProduct()
             }
+
+            ignoreBt.setOnClickListener{
+                clearFields()
+            }
         }else{
-            updateMedicine()
+
+            saveBt.setOnClickListener{
+                updateMedicine()
+            }
+            ignoreBt.setOnClickListener{
+                deleteButtonPressed()
+            }
+
         }
+
+    }
+
+    private fun deleteButtonPressed(){
+        val dialog = NoticeDialog(DELETE_CODE, "Are you sure you want to delete this product", "Yes")
+        dialog.setListener(this)
+
+    }
+
+    private fun deleteMedicine(){
+        productDetailViewModel.deleteMedicine(uId, passedProduct!!.medUid)
+        productDetailViewModel.deletingProductOutput.observe(viewLifecycleOwner, {
+            if (it["status"] == "success"){
+                Toast.makeText(activity, "Record deleted", Toast.LENGTH_LONG).show()
+                this.findNavController().navigateUp()
+
+            }else if (it["status"] == "failed"){
+                openInfodialog(it["value"]!!, "Error deleting the item")
+            }
+        })
 
     }
 
@@ -116,6 +153,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         countryManufacturingSp = view.findViewById(R.id.manufacturing_country_tl)
         availabilitySp = view.findViewById(R.id.availability_product_spinner)
         saveBt = view.findViewById(R.id.save_product_bt)
+        ignoreBt = view.findViewById(R.id.ignore_product_bt)
 
         countryManufacturingSp.onItemSelectedListener = this
 
@@ -197,6 +235,12 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment, code: Int) {
+        if (code == DELETE_CODE)
+            deleteMedicine()
+
     }
 
 

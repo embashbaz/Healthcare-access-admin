@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
+import com.example.yourmedadmin.ui.dialogs.InfoDialog
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -69,6 +70,8 @@ class LoginFragment : Fragment() {
                   this.findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
                 }else if (it["status"] == "failed"){
                    //TODO: show dialog
+                    val dialog = it["value"]?.let { it1 -> InfoDialog(it1) }
+                    dialog?.show(parentFragmentManager, "Error logging in")
                 }
             })
         }else{

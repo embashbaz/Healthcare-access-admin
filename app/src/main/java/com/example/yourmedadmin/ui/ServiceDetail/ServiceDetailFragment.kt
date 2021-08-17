@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Service
+import com.example.yourmedadmin.ui.dialogs.InfoDialog
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -102,10 +103,17 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     clearFields()
 
                 }else if (it["status"] == "failed"){
-                    //TODO: notice dialog
+                    openInfodialog(it["value"]!!, "Failed to add record")
                 }
             })
+        }else{
+            openInfodialog("Only price description, identifier and details can be null", "Failed to add record")
         }
+    }
+
+    fun openInfodialog(message : String, tag: String){
+        val dialog = InfoDialog(message)
+        dialog?.show(parentFragmentManager, tag)
     }
 
     fun clearFields(){

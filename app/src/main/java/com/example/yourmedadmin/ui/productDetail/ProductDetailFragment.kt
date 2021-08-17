@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Medicine
+import com.example.yourmedadmin.ui.dialogs.InfoDialog
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -112,9 +113,11 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     clearFields()
 
                 }else if (it["status"] == "failed"){
-                    //TODO: notice dialog
+                    openInfodialog(it["value"]!!, "Error saving item")
                 }
             })
+        }else{
+            openInfodialog("Only manufacturing country, scientific name and details can be null", "Failed to add record")
         }
     }
 
@@ -123,6 +126,11 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         scientificNameTl.editText?.setText("")
         detailTl.editText?.setText("")
        priceTl.editText?.setText("")
+    }
+
+    fun openInfodialog(message : String, tag: String){
+        val dialog = InfoDialog(message)
+        dialog?.show(parentFragmentManager, tag)
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

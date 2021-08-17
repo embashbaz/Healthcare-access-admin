@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.CareAdmin
+import com.example.yourmedadmin.ui.dialogs.InfoDialog
 import com.example.yourmedadmin.ui.login.LoginViewModel
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.GeoPoint
@@ -109,14 +111,25 @@ class RegistrationFragment : Fragment(),CoordinateDialog.CoordinateDialogListene
             val careAdmin = CareAdmin("",name, phone.toLong(), email,license, "",country, town, coordinate,serviceOffered,detail )
             registrationViewModel.signUp(careAdmin, password)
             registrationViewModel.registrationOutput.observe(viewLifecycleOwner,{
-                //show something
+                if(it["status"] == "success"){
+                    openInfodialog("Your account has been created, please login", "Success")
+                    this.findNavController().navigateUp()
+                }else if(it["status"] == "failed"){
+                    openInfodialog(it["value"]!!, "Error")
+
+                }
             })
          }else{
-
+                openInfodialog("Make sure both password are the same", "Error")
             }
         }else{
-
+            openInfodialog("Make sure you have provided all the information", "Error")
         }
+    }
+
+    fun openInfodialog(message : String, tag: String){
+        val dialog = InfoDialog(message)
+        dialog?.show(parentFragmentManager, tag)
     }
 
     fun bindViews(view: View){

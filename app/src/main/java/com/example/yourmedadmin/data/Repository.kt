@@ -198,10 +198,10 @@ class Repository {
         return data
     }
 
-    fun updateMedicine(uId: String, docId: String, medicine: Medicine): MutableLiveData<HashMap<String, String>>{
+    fun updateService(uId: String, docId: String, service: Service): MutableLiveData<HashMap<String, String>>{
         val operationOutput = MutableLiveData<HashMap<String, String>>()
         var status = hashMapOf<String, String>()
-        mFirebaseDb.collection("providers").document(uId).collection("medicines").document(docId).set(medicine)
+        mFirebaseDb.collection("providers").document(uId).collection("services").document(docId).set(service)
             .addOnSuccessListener {
                 Log.d(ContentValues.TAG, "DocumentSnapshot written")
                 status.put("status", "success")
@@ -226,6 +226,51 @@ class Repository {
         val operationOutput = MutableLiveData<HashMap<String, String>>()
         var status = hashMapOf<String, String>()
         mFirebaseDb.collection("providers").document(uId).collection("medicines").document(docId).delete()
+            .addOnSuccessListener {
+                Log.d(ContentValues.TAG, "DocumentSnapshot written")
+                status.put("status", "success")
+                status.put("value","Record deleted" )
+
+            }
+            .addOnFailureListener { e ->
+                Log.w(ContentValues.TAG, "Error adding document", e)
+                status.put("status", "failed")
+                status.put("value",e.toString() )
+            }
+
+
+
+        return operationOutput
+    }
+
+    fun updateMedicine(uId: String, docId: String, medicine: Medicine): MutableLiveData<HashMap<String, String>>{
+        val operationOutput = MutableLiveData<HashMap<String, String>>()
+        var status = hashMapOf<String, String>()
+        mFirebaseDb.collection("providers").document(uId).collection("medicines").document(docId).set(medicine)
+            .addOnSuccessListener {
+                Log.d(ContentValues.TAG, "DocumentSnapshot written")
+                status.put("status", "success")
+                status.put("value","Record added" )
+                operationOutput.postValue(status)
+
+            }
+            .addOnFailureListener { e ->
+                Log.w(ContentValues.TAG, "Error adding document", e)
+                status.put("status", "failed")
+                status.put("value",e.toString() )
+                operationOutput.postValue(status)
+            }
+
+
+
+        return operationOutput
+    }
+
+    fun deleteService(uId: String, docId: String): MutableLiveData<HashMap<String, String>>{
+
+        val operationOutput = MutableLiveData<HashMap<String, String>>()
+        var status = hashMapOf<String, String>()
+        mFirebaseDb.collection("providers").document(uId).collection("services").document(docId).delete()
             .addOnSuccessListener {
                 Log.d(ContentValues.TAG, "DocumentSnapshot written")
                 status.put("status", "success")

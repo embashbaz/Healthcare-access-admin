@@ -38,13 +38,15 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     lateinit var countryManufacturing: String
     lateinit var availability: String
 
-    lateinit var uId: String
     var passedProduct: Medicine? = null
 
     val productDetailViewModel: ProductDetailViewModel by lazy {
         ViewModelProvider(this).get(ProductDetailViewModel::class.java)
     }
 
+    val uId: String by lazy {
+        (requireActivity().application as  HealthAccessAdmin).uId
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,17 +61,12 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
 
         setButtonAction()
 
-
-        uId = (activity?.application as HealthAccessAdmin).uId
-
-
-
-
         return view
     }
 
     private fun setDataToViews() {
         saveBt.setText("Update")
+        ignoreBt.setText("Delete Medicine")
         genericNameTl.editText?.setText(passedProduct!!.genericName)
         scientificNameTl.editText?.setText(passedProduct!!.scientificName)
         detailTl.editText?.setText(passedProduct!!.detailsMed)

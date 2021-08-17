@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
+import com.example.yourmedadmin.data.Medicine
 import com.example.yourmedadmin.data.Service
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
 import com.google.android.material.textfield.TextInputLayout
@@ -30,6 +32,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
     lateinit var priceStr: String
     lateinit var priceDesc: String
     lateinit var availability: String
+    var passedService: Service? = null
 
     val uId: String by lazy {
         (requireActivity().application as  HealthAccessAdmin).uId
@@ -48,12 +51,61 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val view = inflater.inflate(R.layout.fragment_service_detail, container, false)
         bindViews(view)
 
-        saveBt.setOnClickListener{
-            saveService()
+        if(arguments?.getParcelable<Medicine>("service") != null) {
+            passedService = arguments?.getParcelable("service")
+            setDataToViews()
         }
+
+        setButtonAction()
 
 
         return view
+    }
+
+    private fun setButtonAction() {
+        if (passedService == null){
+            saveBt.setOnClickListener{
+                saveService()
+            }
+        }else{
+            saveBt.setOnClickListener{
+                updateService()
+            }
+        }
+    }
+
+    private fun updateService() {
+        getDataFromViews()
+        if(checkMandatoryFields()){
+            passedService!!.name = name
+            passedService!!.identifier = identifier
+            passedService!!.details = detail
+            passedService!!.price = priceStr.toDouble()
+            passedService!!.priceDescription = priceDesc
+            passedService!!.availability = availability
+            serviceDetailViewmodel.updateService(uId, passedService!!.uId!!, passedService!!)
+            serviceDetailViewmodel.updatingServiceOutput.observe(viewLifecycleOwner,{
+                if (it["status"] == "success"){
+                    Toast.makeText(activity, "Record updated ", Toast.LENGTH_LONG).show()
+                    this.findNavController().navigateUp()
+
+                }else if (it["status"] == "failed"){
+                    openInfodialog(it["value"]!!, "Error updating item")
+                }
+            })
+
+        }else{
+            openInfodialog("Only price description, identifier and details can be null", "Failed to add record")
+        }
+    }
+
+    private fun setDataToViews() {
+        saveBt.setText("Update")
+        nameTl.editText?.setText(passedService!!.name)
+        priceDescTl.editText?.setText(passedService!!.priceDescription)
+        identifierTl.editText?.setText(passedService!!.identifier)
+        detailTl.editText?.setText(passedService!!.identifier)
+        priceTl.editText?.setText(passedService!!.price.toString())
     }
 
     fun bindViews(view: View){

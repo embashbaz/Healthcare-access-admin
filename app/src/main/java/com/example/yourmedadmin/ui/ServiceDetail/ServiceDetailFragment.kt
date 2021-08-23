@@ -55,7 +55,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, No
         val view = inflater.inflate(R.layout.fragment_service_detail, container, false)
         bindViews(view)
 
-        if(arguments?.getParcelable<Medicine>("service") != null) {
+        if(arguments?.getParcelable<Service>("service") != null) {
             passedService = arguments?.getParcelable("service")
             setDataToViews()
         }
@@ -95,9 +95,9 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, No
     private fun updateService() {
         getDataFromViews()
         if(checkMandatoryFields()){
-            passedService!!.name = name
+            passedService!!.serviceName = name
             passedService!!.identifier = identifier
-            passedService!!.details = detail
+            passedService!!.serviceDetails = detail
             passedService!!.price = priceStr.toDouble()
             passedService!!.priceDescription = priceDesc
             passedService!!.availability = availability
@@ -120,7 +120,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, No
     private fun setDataToViews() {
         saveBt.setText("Update")
         ignoreBt.setText("Delete service")
-        nameTl.editText?.setText(passedService!!.name)
+        nameTl.editText?.setText(passedService!!.serviceName)
         priceDescTl.editText?.setText(passedService!!.priceDescription)
         identifierTl.editText?.setText(passedService!!.identifier)
         detailTl.editText?.setText(passedService!!.identifier)
@@ -152,11 +152,11 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, No
     }
 
     fun getDataFromViews(){
-        name = nameTl.editText?.text.toString()
-        identifier = identifierTl.editText?.text.toString()
-        detail = detailTl.editText?.text.toString()
-        priceStr = priceTl.editText?.text.toString()
-        priceDesc = priceDescTl.editText?.text.toString()
+        name = nameTl.editText?.text.toString().trim().lowercase()
+        identifier = identifierTl.editText?.text.toString().trim().lowercase()
+        detail = detailTl.editText?.text.toString().trim().lowercase()
+        priceStr = priceTl.editText?.text.toString().trim()
+        priceDesc = priceDescTl.editText?.text.toString().trim().lowercase()
     }
 
     fun checkMandatoryFields(): Boolean{

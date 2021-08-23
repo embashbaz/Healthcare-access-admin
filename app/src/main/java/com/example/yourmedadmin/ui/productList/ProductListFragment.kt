@@ -44,7 +44,7 @@ class ProductListFragment : Fragment() {
         populateView()
 
         addProductFb.setOnClickListener{
-            this.findNavController().navigate(R.id.action_serviceListFragment_to_serviceDetailFragment)
+            this.findNavController().navigate(R.id.action_productListFragment_to_productDetailFragment)
         }
 
 
@@ -54,7 +54,7 @@ class ProductListFragment : Fragment() {
     private fun goToMedicineDetail(medicine: Medicine) {
         val bundle = Bundle()
         bundle.putParcelable("medicine", medicine)
-        this.findNavController().navigate(R.id.action_serviceListFragment_to_serviceDetailFragment, bundle)
+        this.findNavController().navigate(R.id.action_productListFragment_to_productDetailFragment, bundle)
 
     }
 

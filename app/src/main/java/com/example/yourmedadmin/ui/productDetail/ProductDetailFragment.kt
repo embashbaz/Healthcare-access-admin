@@ -1,6 +1,9 @@
 package com.example.yourmedadmin.ui.productDetail
 
 import android.os.Bundle
+import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +40,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     lateinit var priceStr: String
     lateinit var countryManufacturing: String
     lateinit var availability: String
+    private val handler = Handler()
 
     var passedProduct: Medicine? = null
 
@@ -64,6 +68,11 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getItemNameRecomendation()
+    }
+
     private fun setDataToViews() {
         saveBt.setText("Update")
         ignoreBt.setText("Delete Medicine")
@@ -85,7 +94,6 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
                 clearFields()
             }
         }else{
-
             saveBt.setOnClickListener{
                 updateMedicine()
             }
@@ -128,7 +136,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
             passedProduct!!.availability = availability
             passedProduct!!.price = priceStr.toDouble()
             productDetailViewModel.updateProduct(uId, passedProduct!!.medUid, passedProduct!!)
-            productDetailViewModel.addingProductOutput.observe(viewLifecycleOwner, {
+            productDetailViewModel.updatingProductOutput.observe(viewLifecycleOwner, {
                 if (it["status"] == "success"){
                     Toast.makeText(activity, "Record updated ", Toast.LENGTH_LONG).show()
                     this.findNavController().navigateUp()
@@ -148,7 +156,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
         scientificNameTl = view.findViewById(R.id.scientific_name_tl)
         detailTl = view.findViewById(R.id.detail_product_tl)
         priceTl = view.findViewById(R.id.price__product_tl)
-        countryManufacturingSp = view.findViewById(R.id.manufacturing_country_tl)
+        countryManufacturingSp = view.findViewById(R.id.manufacturing_country_sp)
         availabilitySp = view.findViewById(R.id.availability_product_spinner)
         saveBt = view.findViewById(R.id.save_product_bt)
         ignoreBt = view.findViewById(R.id.ignore_product_bt)
@@ -181,10 +189,10 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     }
 
     fun getDataFromView(){
-        genericName = genericNameTl.editText?.text.toString()
-        scientificName = scientificNameTl.editText?.text.toString()
-        detail = detailTl.editText?.text.toString()
-        priceStr = priceTl.editText?.text.toString()
+        genericName = genericNameTl.editText?.text.toString().trim().lowercase()
+        scientificName = scientificNameTl.editText?.text.toString().trim().lowercase()
+        detail = detailTl.editText?.text.toString().trim().lowercase()
+        priceStr = priceTl.editText?.text.toString().trim()
     }
 
     fun checkMandatoryFields(): Boolean{
@@ -226,9 +234,38 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         if (parent != null){
-            countryManufacturing = parent.getItemAtPosition(position).toString()
-            availability = parent.getItemAtPosition(position).toString()
+            if(parent.id == countryManufacturingSp.id){
+                countryManufacturing = parent.getItemAtPosition(position).toString()
+            }else if(parent.id == availabilitySp.id){
+                availability = parent.getItemAtPosition(position).toString()
+            }
+
         }
+    }
+
+    fun getItemNameRecomendation(){
+        genericNameTl.editText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(!s.isNullOrEmpty()){
+
+                    handler.removeCallbacksAndMessages(null)
+                    handler.postDelayed({ productDetailViewModel.getRecomendation(s.toString()) }, 300)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+
+        })
+
+
+
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

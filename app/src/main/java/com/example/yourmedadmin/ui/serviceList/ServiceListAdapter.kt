@@ -53,7 +53,7 @@ class ServiceListAdapter  (onClick: (Service) -> Unit): RecyclerView.Adapter<Ser
             val availability = itemView.findViewById<TextView>(R.id.availability_product_list)
             val price = itemView.findViewById<TextView>(R.id.price_product_list)
 
-            name.setText(item.name)
+            name.setText(item.serviceName)
             availability.setText(item.availability)
             price.setText(item.price.toString())
 

@@ -52,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="Expenses"
+                    android:text="Services"
                     android:textAlignment="center"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -87,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="Orders"
+                    android:text="Medicines"
                     android:textAlignment="center"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -122,7 +122,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="Shops"
+                    android:text="In demand"
                     android:textAlignment="center"
                     android:textStyle="bold" />
             </LinearLayout>

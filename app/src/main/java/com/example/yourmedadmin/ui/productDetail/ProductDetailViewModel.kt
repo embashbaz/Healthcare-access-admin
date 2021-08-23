@@ -1,11 +1,18 @@
 package com.example.yourmedadmin.ui.productDetail
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.yourmedadmin.data.Medicine
 import com.example.yourmedadmin.data.Repository
+import com.example.yourmedadmin.data.RxtermApi
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Response
+import javax.security.auth.callback.Callback
 
 class ProductDetailViewModel : ViewModel() {
 
@@ -24,6 +31,12 @@ class ProductDetailViewModel : ViewModel() {
     val deletingProductOutput: LiveData<HashMap<String, String>>
         get() = _deletingProductOutput
 
+    private val _responsePrediction = MutableLiveData<String>()
+
+    // The external immutable LiveData for the response String
+    val responsePrediction: LiveData<String>
+        get() = _responsePrediction
+
 
 
     fun updateProduct(uId: String, docId: String, medicine: Medicine){
@@ -36,5 +49,25 @@ class ProductDetailViewModel : ViewModel() {
 
     fun saveNewProduct(medicine: Medicine, uId: String){
         _addingProductOutput = repository.saveNewProduct(medicine, uId)
+    }
+
+    fun getRecomendation(predText: String){
+       RxtermApi.retrofitService.getTerms(predText).enqueue(object : Callback,
+           retrofit2.Callback<String> {
+           override fun onResponse(call: Call<String>, response: Response<String>) {
+               _responsePrediction.value = response.body()
+          val items = response.body()?.split(",[[\"", "\"],[\"","\"]]]")?.toMutableList()
+            items?.removeFirst()
+             for(item in items!!)
+               Log.i("THISSSSSSSS", item)
+
+           }
+
+           override fun onFailure(call: Call<String>, t: Throwable) {
+               _responsePrediction.value = "Failure: " + t.message
+           }
+
+       })
+
     }
 }

@@ -33,7 +33,7 @@ class Repository {
                     data.put("value", mFirebaseAuth.uid.toString())
 
                 } else {
-                    data.put("Status", "Failed")
+                    data.put("status", "failed")
                     data.put("value",  "Operation Failed with error"+ task.exception)
 
                     Log.d(ContentValues.TAG, "Failed withe errt", task.exception)
@@ -62,7 +62,7 @@ class Repository {
                         careAdmin.uId = userId.toString()
                     }
 
-                    mFirebaseDb.collection("shops").document(userId.toString()).set(careAdmin)
+                    mFirebaseDb.collection("providers").document(userId.toString()).set(careAdmin)
                         .addOnSuccessListener {
                             Log.d(ContentValues.TAG, "DocumentSnapshot written")
                             status.put("status", "success")
@@ -73,7 +73,7 @@ class Repository {
                         }
                         .addOnFailureListener { e ->
                             Log.w(ContentValues.TAG, "Error adding document", e)
-                            status.put("status", "Failed")
+                            status.put("status", "failed")
                             status.put("value",
                                 "Operation Failed with error"+ e.toString()
                             )
@@ -81,7 +81,7 @@ class Repository {
                         }
 
                 } else {
-                    status.put("status", "Failed")
+                    status.put("status", "failed")
                     status.put("value",
                         "Operation Failed with error"+ task.exception
                     )
@@ -96,22 +96,35 @@ class Repository {
 
     fun saveNewService(service: Service, uId: String): MutableLiveData<HashMap<String, String>>{
         val operationOutput = MutableLiveData<HashMap<String, String>>()
-
         var status = hashMapOf<String, String>()
-        mFirebaseDb.collection("providers").document(uId).collection("service").add(service)
+        mFirebaseDb.collection("providers").document(uId).get()
             .addOnSuccessListener {
-                Log.d(ContentValues.TAG, "DocumentSnapshot written")
-                status.put("status", "success")
-                status.put("value","Record added" )
-                operationOutput.postValue(status)
+                if (it != null){
+                    service.provider = it.toObject(CareAdmin::class.java)
 
-            }
-            .addOnFailureListener { e ->
-                Log.w(ContentValues.TAG, "Error adding document", e)
+                    mFirebaseDb.collection("providers").document(uId).collection("services").add(service)
+                        .addOnSuccessListener {
+                            Log.d(ContentValues.TAG, "DocumentSnapshot written")
+                            status.put("status", "success")
+                            status.put("value","Record added" )
+                            operationOutput.postValue(status)
+
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(ContentValues.TAG, "Error adding document", e)
+                            status.put("status", "failed")
+                            status.put("value",e.toString() )
+                            operationOutput.postValue(status)
+                        }
+
+                }
+
+            }.addOnFailureListener{
                 status.put("status", "failed")
-                status.put("value",e.toString() )
+                status.put("value",it.toString() )
                 operationOutput.postValue(status)
             }
+
 
         operationOutput.postValue(status)
 
@@ -123,18 +136,30 @@ class Repository {
         val operationOutput = MutableLiveData<HashMap<String, String>>()
 
         var status = hashMapOf<String, String>()
-        mFirebaseDb.collection("providers").document(uId).collection("medicines").add(medicine)
-            .addOnSuccessListener {
-                Log.d(ContentValues.TAG, "DocumentSnapshot written")
-                status.put("status", "success")
-                status.put("value","Record added" )
-                operationOutput.postValue(status)
 
-            }
-            .addOnFailureListener { e ->
-                Log.w(ContentValues.TAG, "Error adding document", e)
+        mFirebaseDb.collection("providers").document(uId).get()
+            .addOnSuccessListener {
+                if (it != null) {
+                    medicine.provider = it.toObject(CareAdmin::class.java)
+                    mFirebaseDb.collection("providers").document(uId).collection("medicines")
+                        .add(medicine)
+                        .addOnSuccessListener {
+                            Log.d(ContentValues.TAG, "DocumentSnapshot written")
+                            status.put("status", "success")
+                            status.put("value", "Record added")
+                            operationOutput.postValue(status)
+
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(ContentValues.TAG, "Error adding document", e)
+                            status.put("status", "failed")
+                            status.put("value", e.toString())
+                            operationOutput.postValue(status)
+                        }
+                }
+            }.addOnFailureListener{
                 status.put("status", "failed")
-                status.put("value",e.toString() )
+                status.put("value", it.toString())
                 operationOutput.postValue(status)
             }
 
@@ -227,15 +252,18 @@ class Repository {
         var status = hashMapOf<String, String>()
         mFirebaseDb.collection("providers").document(uId).collection("medicines").document(docId).delete()
             .addOnSuccessListener {
-                Log.d(ContentValues.TAG, "DocumentSnapshot written")
+
                 status.put("status", "success")
                 status.put("value","Record deleted" )
+                operationOutput.postValue(status)
 
             }
             .addOnFailureListener { e ->
                 Log.w(ContentValues.TAG, "Error adding document", e)
                 status.put("status", "failed")
                 status.put("value",e.toString() )
+                operationOutput.postValue(status)
+
             }
 
 
@@ -246,6 +274,8 @@ class Repository {
     fun updateMedicine(uId: String, docId: String, medicine: Medicine): MutableLiveData<HashMap<String, String>>{
         val operationOutput = MutableLiveData<HashMap<String, String>>()
         var status = hashMapOf<String, String>()
+
+
         mFirebaseDb.collection("providers").document(uId).collection("medicines").document(docId).set(medicine)
             .addOnSuccessListener {
                 Log.d(ContentValues.TAG, "DocumentSnapshot written")
@@ -275,12 +305,14 @@ class Repository {
                 Log.d(ContentValues.TAG, "DocumentSnapshot written")
                 status.put("status", "success")
                 status.put("value","Record deleted" )
+                operationOutput.postValue(status)
 
             }
             .addOnFailureListener { e ->
                 Log.w(ContentValues.TAG, "Error adding document", e)
                 status.put("status", "failed")
                 status.put("value",e.toString() )
+                operationOutput.postValue(status)
             }
 
 

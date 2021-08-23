@@ -4,7 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="availability_array">
-        <item>In stock</item>
+        <item>Available</item>
         <item>Not available now</item>
     </string-array>
 

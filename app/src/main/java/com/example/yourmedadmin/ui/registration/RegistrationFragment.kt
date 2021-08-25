@@ -272,7 +272,7 @@ class RegistrationFragment : Fragment(),CoordinateDialog.CoordinateDialogListene
     }
 
     private fun initRecyclerView(view: View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView = view.findViewById(R.id.recycler_view)
         val layoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter

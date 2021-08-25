@@ -251,7 +251,6 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if(!s.isNullOrEmpty()){
-
                     handler.removeCallbacksAndMessages(null)
                     handler.postDelayed({ productDetailViewModel.getRecomendation(s.toString()) }, 300)
                 }

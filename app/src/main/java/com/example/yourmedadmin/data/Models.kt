@@ -51,3 +51,21 @@ data class PredictionAutoComplete(
     var secondaryText: String = ""
 )
 
+data class InDemand(
+    var numberRequest: Int = 0,
+    var docId: String = "",
+    var serviceName: String = "",
+    var countyName: String = "",
+    var countryName: String = "",
+    var status: Int = 1,
+    var indemandDeviceId: MutableList<String> = mutableListOf(),
+    var indemandContact :MutableList<String> = mutableListOf()
+)
+
+data class InDemandQueryResults(
+    var status: String ="",
+    var statusValue: String = "",
+    var inDemadList: MutableList<InDemand> = mutableListOf()
+
+)
+

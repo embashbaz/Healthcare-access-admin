@@ -320,6 +320,40 @@ class Repository {
         return operationOutput
     }
 
+    fun getIndemandList(country: String, county: String, serviceType: String): MutableLiveData<InDemandQueryResults>{
+        var queryResults = MutableLiveData<InDemandQueryResults>()
+        var myResults = InDemandQueryResults()
+        val serviceRef = mFirebaseDb.collection(serviceType)
+
+        serviceRef.whereEqualTo("countryName", country)
+            .whereEqualTo("countyName", county)
+            .get()
+            .addOnSuccessListener {
+
+                if(!it.isEmpty) {
+                    myResults.status = "success"
+                    myResults.statusValue = "success"
+                    for (snapshot in it) {
+                        val service = snapshot.toObject(InDemand::class.java)
+                        myResults.inDemadList.add(service)
+
+                    }
+                }else{
+                    myResults.status = "success"
+                    myResults.statusValue = "failed"
+                }
+                queryResults.postValue(myResults)
+            }.addOnFailureListener{
+                myResults.status = "failed"
+                myResults.statusValue = it.toString()
+
+                queryResults.postValue(myResults)
+            }
+
+        return queryResults
+    }
+
+
 
 
 

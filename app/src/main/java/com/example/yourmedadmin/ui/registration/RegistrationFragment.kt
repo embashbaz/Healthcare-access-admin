@@ -11,8 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.size
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -22,7 +20,6 @@ import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.CareAdmin
 import com.example.yourmedadmin.data.PredictionAutoComplete
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
-import com.example.yourmedadmin.ui.login.LoginViewModel
 import com.example.yourmedadmin.ui.other.PredictionAdapter
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.model.LatLng
@@ -250,7 +247,7 @@ class RegistrationFragment : Fragment(),CoordinateDialog.CoordinateDialogListene
 
         townTl.editText?.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+                viewAnimator.visibility = View.INVISIBLE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -272,7 +269,7 @@ class RegistrationFragment : Fragment(),CoordinateDialog.CoordinateDialogListene
     }
 
     private fun initRecyclerView(view: View) {
-        recyclerView = view.findViewById(R.id.recycler_view)
+        recyclerView = view.findViewById(R.id.place_prediction_recycler_view)
         val layoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
@@ -315,9 +312,13 @@ class RegistrationFragment : Fragment(),CoordinateDialog.CoordinateDialogListene
                 predictionAutoCompletes.add(predictionAutoComplete)
             }
             adapter.setPredictions(predictionAutoCompletes)
-
-            viewAnimator.displayedChild = if (predictions.isEmpty()) 0 else 1
-            viewAnimator.visibility = View.VISIBLE
+            if(!predictions.isEmpty() && !query.isNullOrEmpty()){
+                viewAnimator.visibility = View.VISIBLE
+                viewAnimator.displayedChild = if (predictions.isEmpty()) 0 else 1
+            }else{
+                viewAnimator.visibility = View.INVISIBLE
+                viewAnimator.displayedChild = if (predictions.isEmpty()) 0 else 1
+            }
         }.addOnFailureListener { exception: Exception? ->
 
             if (exception is ApiException) {

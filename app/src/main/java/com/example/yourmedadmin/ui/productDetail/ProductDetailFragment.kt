@@ -12,11 +12,16 @@ import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
 import com.example.yourmedadmin.data.Medicine
+import com.example.yourmedadmin.data.PredictionAutoComplete
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
 import com.example.yourmedadmin.ui.dialogs.NoticeDialog
+import com.example.yourmedadmin.ui.other.PredictionAdapter
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -33,6 +38,8 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     lateinit var saveBt: Button
     lateinit var ignoreBt: Button
 
+    private lateinit var viewAnimator: ViewAnimator
+    lateinit var recyclerView: RecyclerView
 
     lateinit var genericName: String
     lateinit var scientificName: String
@@ -48,6 +55,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
         ViewModelProvider(this).get(ProductDetailViewModel::class.java)
     }
 
+    private val adapter =  PredictionAdapter()
     val uId: String by lazy {
         (requireActivity().application as  HealthAccessAdmin).uId
     }
@@ -71,6 +79,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getItemNameRecomendation()
+        initRecyclerView(view)
     }
 
     private fun setDataToViews() {
@@ -160,6 +169,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
         availabilitySp = view.findViewById(R.id.availability_product_spinner)
         saveBt = view.findViewById(R.id.save_product_bt)
         ignoreBt = view.findViewById(R.id.ignore_product_bt)
+        viewAnimator = view.findViewById(R.id.product_detail_view_animator)
 
         countryManufacturingSp.onItemSelectedListener = this
 
@@ -246,13 +256,14 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     fun getItemNameRecomendation(){
         genericNameTl.editText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+                viewAnimator.visibility = View.INVISIBLE
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(activity?.currentFocus == genericNameTl.editText)
                 if(!s.isNullOrEmpty()){
-                    handler.removeCallbacksAndMessages(null)
-                    handler.postDelayed({ productDetailViewModel.getRecomendation(s.toString()) }, 300)
+                      handler.removeCallbacksAndMessages(null)
+                    handler.postDelayed({ displayPlaceRecomendation(s.toString()) }, 300)
                 }
             }
 
@@ -266,6 +277,46 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
 
 
     }
+    fun displayPlaceRecomendation(query: String){
+        productDetailViewModel.getRecomendation(query)
+        productDetailViewModel.responsePrediction.observe(viewLifecycleOwner, {
+            var predictionAutoCompletes = mutableListOf<PredictionAutoComplete>()
+            for (prediction in it){
+                val predictionAutoComplete = PredictionAutoComplete(prediction, "")
+                predictionAutoCompletes.add(predictionAutoComplete)
+            }
+            adapter.setPredictions(predictionAutoCompletes)
+        if(!it.isEmpty() && !query.isNullOrEmpty()){
+            viewAnimator.visibility = View.VISIBLE
+            viewAnimator.displayedChild = if (it.isEmpty()) 0 else 1
+        }else{
+            viewAnimator.visibility = View.INVISIBLE
+            viewAnimator.displayedChild = if (it.isEmpty()) 0 else 1
+        }
+
+
+        })
+
+    }
+
+    private fun initRecyclerView(view: View) {
+        recyclerView = view.findViewById(R.id.product_detail_recycler_view)
+        val layoutManager = LinearLayoutManager(activity)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
+        recyclerView.addItemDecoration(DividerItemDecoration(activity, layoutManager.orientation))
+        adapter.onPlaceClickListener = { nameRecomendation(it) }
+    }
+
+
+    private fun nameRecomendation(it: PredictionAutoComplete) {
+        genericNameTl.clearFocus()
+        viewAnimator.visibility = View.INVISIBLE
+        genericNameTl.editText?.setText(it.primaryText)
+        viewAnimator.displayedChild = 0
+        adapter.predictions.clear()
+    }
+
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")

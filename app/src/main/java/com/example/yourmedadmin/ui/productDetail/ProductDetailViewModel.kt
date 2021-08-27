@@ -31,10 +31,10 @@ class ProductDetailViewModel : ViewModel() {
     val deletingProductOutput: LiveData<HashMap<String, String>>
         get() = _deletingProductOutput
 
-    private val _responsePrediction = MutableLiveData<String>()
+    private val _responsePrediction = MutableLiveData<List<String>>()
 
     // The external immutable LiveData for the response String
-    val responsePrediction: LiveData<String>
+    val responsePrediction: LiveData<List<String>>
         get() = _responsePrediction
 
 
@@ -55,16 +55,27 @@ class ProductDetailViewModel : ViewModel() {
        RxtermApi.retrofitService.getTerms(predText).enqueue(object : Callback,
            retrofit2.Callback<String> {
            override fun onResponse(call: Call<String>, response: Response<String>) {
-               _responsePrediction.value = response.body()
-          val items = response.body()?.split(",[[\"", "\"],[\"","\"]]]")?.toMutableList()
-            items?.removeFirst()
-             for(item in items!!)
-               Log.i("THISSSSSSSS", item)
+              if(response.isSuccessful) {
+                  if (!response.body().isNullOrEmpty()) {
+                      val items =
+                          response.body()?.split(",[[\"", "\"],[\"", "\"]]]")?.toMutableList()
+                      if (!items?.isEmpty()!!) {
+                          items.removeFirst()
+                          items.removeLast()
+                          if (!items.isNullOrEmpty())
+                              _responsePrediction.value = items
+                          else
+                              _responsePrediction.value = emptyList()
+                      }else
+                          _responsePrediction.value = emptyList()
+                  }
+              }
+
 
            }
 
            override fun onFailure(call: Call<String>, t: Throwable) {
-               _responsePrediction.value = "Failure: " + t.message
+               _responsePrediction.value = listOf("Failure: " + t.message)
            }
 
        })

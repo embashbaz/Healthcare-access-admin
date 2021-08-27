@@ -30,13 +30,25 @@ class Repository {
                     Log.d(ContentValues.TAG, "signInWithEmail:success")
 
                     data.put("status", "success")
+
                     data.put("value", mFirebaseAuth.uid.toString())
+                    mFirebaseDb.collection("providers").document(mFirebaseAuth.uid.toString()).get()
+                        .addOnSuccessListener {
+                            if (it != null) {
+                                data.put("status", "success")
+                                data.put("value", mFirebaseAuth.uid.toString())
+                                //TODO: get med admin object
+
+                            }
+
+                        }
+
 
                 } else {
                     data.put("status", "failed")
                     data.put("value",  "Operation Failed with error"+ task.exception)
 
-                    Log.d(ContentValues.TAG, "Failed withe errt", task.exception)
+                    Log.d(ContentValues.TAG, "Failed with error", task.exception)
 
                 }
 

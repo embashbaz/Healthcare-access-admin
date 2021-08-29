@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
+import com.example.yourmedadmin.data.CareAdmin
 import com.example.yourmedadmin.data.Medicine
 import com.example.yourmedadmin.data.PredictionAutoComplete
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
@@ -48,6 +49,9 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     lateinit var countryManufacturing: String
     lateinit var availability: String
     private val handler = Handler()
+    val adminObject: CareAdmin by lazy {
+        (activity?.application as HealthAccessAdmin).mCareAdmin as CareAdmin
+    }
 
     var passedProduct: Medicine? = null
 
@@ -214,7 +218,7 @@ class ProductDetailFragment : Fragment(), AdapterView.OnItemSelectedListener , N
     fun saveProduct(){
         getDataFromView()
         if(checkMandatoryFields()){
-            val medicine = Medicine(scientificName, genericName,countryManufacturing, detail, availability, "", priceStr.toDouble())
+            val medicine = Medicine(scientificName, genericName,countryManufacturing, detail, availability, "", priceStr.toDouble(),adminObject)
             productDetailViewModel.saveNewProduct(medicine, uId)
             productDetailViewModel.addingProductOutput.observe(viewLifecycleOwner, {
                 if (it["status"] == "success"){

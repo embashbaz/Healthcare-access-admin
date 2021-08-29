@@ -19,36 +19,41 @@ class Repository {
 
     }
 
-    fun login(email: String, password: String): MutableLiveData<HashMap<String, String>> {
-        val operationOutput = MutableLiveData<HashMap<String, String>>()
+    fun login(email: String, password: String): MutableLiveData<LoginCareAdminObject> {
+        val operationOutput = MutableLiveData<LoginCareAdminObject>()
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
 
-                val data : HashMap<String, String> = hashMapOf()
+                var data  = LoginCareAdminObject()
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(ContentValues.TAG, "signInWithEmail:success")
 
-                    data.put("status", "success")
+                    data.status = "success"
 
-                    data.put("value", mFirebaseAuth.uid.toString())
                     mFirebaseDb.collection("providers").document(mFirebaseAuth.uid.toString()).get()
                         .addOnSuccessListener {
                             if (it != null) {
-                                data.put("status", "success")
-                                data.put("value", mFirebaseAuth.uid.toString())
-                                //TODO: get med admin object
+                                data.status = "success"
+                                data.statusValue = "success"
+                                data.careAdmin = it.toObject(CareAdmin::class.java)
 
+                            }else{
+                                data.status = "failed"
+                                data.statusValue = "You are not an admin and can't access this portal"
                             }
+                            operationOutput.postValue(data)
 
+                        }.addOnFailureListener{
+                            data.status = "failed"
+                            data.statusValue = it.toString()
+                            operationOutput.postValue(data)
                         }
 
 
                 } else {
-                    data.put("status", "failed")
-                    data.put("value",  "Operation Failed with error"+ task.exception)
-
-                    Log.d(ContentValues.TAG, "Failed with error", task.exception)
+                    data.status = "failed"
+                    data.statusValue = task.exception.toString()
 
                 }
 
@@ -109,12 +114,7 @@ class Repository {
     fun saveNewService(service: Service, uId: String): MutableLiveData<HashMap<String, String>>{
         val operationOutput = MutableLiveData<HashMap<String, String>>()
         var status = hashMapOf<String, String>()
-        mFirebaseDb.collection("providers").document(uId).get()
-            .addOnSuccessListener {
-                if (it != null){
-                    service.provider = it.toObject(CareAdmin::class.java)
-
-                    mFirebaseDb.collection("providers").document(uId).collection("services").add(service)
+        mFirebaseDb.collection("providers").document(uId).collection("services").add(service)
                         .addOnSuccessListener {
                             Log.d(ContentValues.TAG, "DocumentSnapshot written")
                             status.put("status", "success")
@@ -129,14 +129,6 @@ class Repository {
                             operationOutput.postValue(status)
                         }
 
-                }
-
-            }.addOnFailureListener{
-                status.put("status", "failed")
-                status.put("value",it.toString() )
-                operationOutput.postValue(status)
-            }
-
 
         operationOutput.postValue(status)
 
@@ -148,11 +140,6 @@ class Repository {
         val operationOutput = MutableLiveData<HashMap<String, String>>()
 
         var status = hashMapOf<String, String>()
-
-        mFirebaseDb.collection("providers").document(uId).get()
-            .addOnSuccessListener {
-                if (it != null) {
-                    medicine.provider = it.toObject(CareAdmin::class.java)
                     mFirebaseDb.collection("providers").document(uId).collection("medicines")
                         .add(medicine)
                         .addOnSuccessListener {
@@ -168,12 +155,6 @@ class Repository {
                             status.put("value", e.toString())
                             operationOutput.postValue(status)
                         }
-                }
-            }.addOnFailureListener{
-                status.put("status", "failed")
-                status.put("value", it.toString())
-                operationOutput.postValue(status)
-            }
 
         operationOutput.postValue(status)
 

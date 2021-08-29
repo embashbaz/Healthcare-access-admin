@@ -21,6 +21,12 @@ data class CareAdmin(
 
 ): Parcelable
 
+data class LoginCareAdminObject(
+    var status: String="",
+    var statusValue: String="",
+    var careAdmin: CareAdmin? = null
+)
+
 @Parcelize
 data class Service(
     var serviceId: String = "",

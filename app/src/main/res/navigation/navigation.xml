@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_serviceListFragment"
             app:destination="@id/serviceListFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_indemandListFragment"
+            app:destination="@id/indemandListFragment" />
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
@@ -62,4 +65,9 @@
         android:name="com.example.yourmedadmin.ui.productDetail.ProductDetailFragment"
         android:label="fragment_product_detail"
         tools:layout="@layout/fragment_product_detail" />
+    <fragment
+        android:id="@+id/indemandListFragment"
+        android:name="com.example.yourmedadmin.ui.indemandList.IndemandListFragment"
+        android:label="fragment_indemand_list"
+        tools:layout="@layout/fragment_indemand_list" />
 </navigation>

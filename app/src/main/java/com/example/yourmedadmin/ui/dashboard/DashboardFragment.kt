@@ -17,6 +17,7 @@ class DashboardFragment : Fragment() {
     lateinit var goToIndemandList: CardView
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +37,10 @@ class DashboardFragment : Fragment() {
 
         goToProductList.setOnClickListener{
             this.findNavController().navigate(R.id.action_dashboardFragment_to_productListFragment)
+        }
+
+        goToIndemandList.setOnClickListener{
+            this.findNavController().navigate(R.id.action_dashboardFragment_to_indemandListFragment)
         }
     }
 

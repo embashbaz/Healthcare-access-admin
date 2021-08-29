@@ -63,14 +63,14 @@ class LoginFragment : Fragment() {
             )
 
             loginViewModel.loginOutput.observe(viewLifecycleOwner, {
-               // Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
-                //    .show()
-                if (it["status"] == "success") {
-                    (activity?.application as HealthAccessAdmin).uId = it["value"].toString()
+
+                if (it.status == "success" && it.statusValue =="success") {
+                    (activity?.application as HealthAccessAdmin).uId = it.careAdmin!!.uId.toString()
+                    (activity?.application as HealthAccessAdmin).mCareAdmin = it.careAdmin!!
                   this.findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
-                }else if (it["status"] == "failed"){
+                }else if (it.status == "failed"){
                    //TODO: show dialog
-                    val dialog = it["value"]?.let { it1 -> InfoDialog(it1) }
+                    val dialog = it.statusValue?.let { it1 -> InfoDialog(it1) }
                     dialog?.show(parentFragmentManager, "Error logging in")
                 }
             })

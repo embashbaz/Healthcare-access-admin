@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
+import com.example.yourmedadmin.data.CareAdmin
 import com.example.yourmedadmin.data.InDemand
+import com.example.yourmedadmin.ui.dialogs.InfoDialog
 
 
 class IndemandListFragment : Fragment() {
@@ -19,6 +22,10 @@ class IndemandListFragment : Fragment() {
 
     val indemandListViewModel : IndemandListViewModel by lazy {
         ViewModelProvider(this).get(IndemandListViewModel::class.java)
+    }
+
+    val adminObject: CareAdmin by lazy {
+        (activity?.application as HealthAccessAdmin).mCareAdmin as CareAdmin
     }
 
 
@@ -32,17 +39,28 @@ class IndemandListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.indemand_recycler)
         indemandListAdapter = IndemandListAdapter { inDemand -> showItemDetail(inDemand) }
 
-        indemandListViewModel.getproducts("","","").observe(viewLifecycleOwner,{
+        indemandListViewModel.getproducts(adminObject.country,adminObject.town,"indemand_medicine").observe(viewLifecycleOwner,{
             if(it != null){
-               indemandListAdapter.setData(it.inDemadList as ArrayList<InDemand>)
-
-            }
+                if(it.status == "success") {
+                    if(it.statusValue == "success")
+                    indemandListAdapter.setData(it.inDemadList as ArrayList<InDemand>)
+                    else if (it.statusValue == "failed")
+                        openInfodialog("No item has been added","No item")
+                }else if(it.status == "failed"){
+                    openInfodialog(it.statusValue, "Error")
+                }
+                }
         })
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = indemandListAdapter
 
 
         return view
+    }
+
+    fun openInfodialog(message : String, tag: String){
+        val dialog = InfoDialog(message)
+        dialog?.show(parentFragmentManager, tag)
     }
 
     private fun showItemDetail(inDemand: InDemand) {

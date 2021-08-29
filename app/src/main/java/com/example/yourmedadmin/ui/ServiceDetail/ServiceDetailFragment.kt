@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.yourmedadmin.HealthAccessAdmin
 import com.example.yourmedadmin.R
+import com.example.yourmedadmin.data.CareAdmin
 import com.example.yourmedadmin.data.Medicine
 import com.example.yourmedadmin.data.Service
 import com.example.yourmedadmin.ui.dialogs.InfoDialog
@@ -44,6 +45,10 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, No
 
     val serviceDetailViewmodel:  ServiceDetailViewmodel by lazy {
         ViewModelProvider(this).get(ServiceDetailViewmodel::class.java)
+    }
+
+    val adminObject: CareAdmin by lazy {
+        (activity?.application as HealthAccessAdmin).mCareAdmin as CareAdmin
     }
 
 
@@ -167,7 +172,7 @@ class ServiceDetailFragment : Fragment(), AdapterView.OnItemSelectedListener, No
     fun saveService(){
         getDataFromViews()
         if(checkMandatoryFields()){
-            val service = Service("", name, identifier, detail, priceStr.toDouble(), priceDesc,availability)
+            val service = Service("", name, identifier, detail, priceStr.toDouble(), priceDesc,availability, adminObject)
             serviceDetailViewmodel.saveNewService(service, uId)
             serviceDetailViewmodel.addingServiceOutput.observe(viewLifecycleOwner, {
                 if (it["status"] == "success"){

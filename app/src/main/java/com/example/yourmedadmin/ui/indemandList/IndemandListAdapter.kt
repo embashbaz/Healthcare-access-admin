@@ -48,7 +48,7 @@ class IndemandListAdapter (onClick: (InDemand) -> Unit): RecyclerView.Adapter<In
             mItem = item
 
             val name = itemView.findViewById<TextView>(R.id.service_name_indemand_item_txt)
-            val availability = itemView.findViewById<TextView>(R.id.availability_product_list)
+           // val availability = itemView.findViewById<TextView>(R.id.availability_product_list)
             val price = itemView.findViewById<TextView>(R.id.number_request)
 
             name.setText(item.serviceName)
@@ -61,7 +61,7 @@ class IndemandListAdapter (onClick: (InDemand) -> Unit): RecyclerView.Adapter<In
             fun from(parent: ViewGroup, onClick: (InDemand) -> Unit): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val view = layoutInflater
-                    .inflate(R.layout.product_list_item, parent, false)
+                    .inflate(R.layout.indemand_item, parent, false)
                 return ViewHolder(view, onClick)
             }
 
